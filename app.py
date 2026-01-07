@@ -10,3 +10,8 @@ notes = st.text_area("Paste your notes here", value=st.session_state["notes"], h
 if st.button("Save notes"):
     st.session_state["notes"] = notes
     st.write("Notes saved successfully!")
+
+if st.session_state["notes"] != "":
+    st.write(len(st.session_state["notes"]))
+    st.write(st.session_state["notes"][0:300]) 
+    # Display first 300 characters of notes)
