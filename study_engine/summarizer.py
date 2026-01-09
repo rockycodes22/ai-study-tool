@@ -1,13 +1,36 @@
-# Summarizer module for the AI Study Tool
 import os
-#reads API key from environmental variables
+import streamlit as st
+from openai import OpenAI
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+def ai_summarize_text(text: str) -> str:
+    if not text or len(text.strip()) == 0:
+        return "No text provided to summarize."
 
-def ai_summarize_text(text):
-    ''' Takes in a string of text and returns 
-    a max  high-level 300 character summary. 
-    Optimized for students wanting to quickly grasp their notes
-    at a high level.
-    '''
-    return ("Summary generation not yet implemented. ")
+    try:
+        api_key = os.environ.get("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY")
+        if not api_key:
+            return "Missing OPENAI_API_KEY."
+
+        client = OpenAI(api_key=api_key)
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Summarize the user's notes clearly and concisely. Max 300 characters."
+                },
+                {
+                    "role": "user",
+                    "content": text
+                }
+            ],
+            temperature=0.3,
+            max_tokens=120,
+        )
+
+        return response.choices[0].message.content.strip()
+
+    except Exception as e:
+        return f"Error generating summary: {e}"
+
